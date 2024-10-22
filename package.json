@@ -2,10 +2,10 @@
   "name": "socmedia-api",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "start": "server.js",
-    "dev": "nodemon server.js"
+    "start": "index.js",
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
