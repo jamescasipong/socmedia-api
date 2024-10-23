@@ -46,6 +46,26 @@ router.post("/posts", authenticateToken, async (req, res) => {
   }
 });
 
+router.post("/reactions/:postId", authenticateToken, async (req, res) => {
+  const { reactions } = req.body;
+  const postId = req.params.postId;
+  const userId = req.user.id;
+
+  console.log(reactions);
+
+  try {
+    const post = await Post.findByIdAndUpdate(postId, {
+      reactions,
+    });
+
+  }
+  catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Error finding post", error: err.message });
+  }
+});
+
 router.post("/comments/:postId", authenticateToken, async (req, res) => {
   const { content, username } = req.body;
   const postId = req.params.postId;
