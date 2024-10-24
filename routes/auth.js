@@ -123,26 +123,28 @@ router.post("/register", async (req, res) => {
 // Login a user
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
 
-  if (!user) {
-    return res.status(500).json({ message: "User not found" });
+  try {
+    const user = await User.findOne({ email });
+
+    if (!(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ message: "Incorrect email or password" });
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    res.json({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      avatar: user.avatar,
+      token,
+    });
+  } catch (err) {
+    res.status(500).json(err.message);
   }
-
-  if (!(await bcrypt.compare(password, user.password))) {
-    return res.status(500).json({ message: "Incorrect email or password" });
-  }
-
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
-  });
-  res.json({
-    id: user._id,
-    username: user.username,
-    email: user.email,
-    avatar: user.avatar,
-    token,
-  });
 });
 
 // Get user profile
