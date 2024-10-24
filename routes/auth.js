@@ -57,9 +57,7 @@ router.post("/reactions/:postId", authenticateToken, async (req, res) => {
     const post = await Post.findByIdAndUpdate(postId, {
       reactions,
     });
-
-  }
-  catch (err) {
+  } catch (err) {
     return res
       .status(500)
       .json({ message: "Error finding post", error: err.message });
@@ -127,8 +125,12 @@ router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
 
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ message: "Incorrect email or password" });
+  if (!user) {
+    return res.status(500).json({ message: "User not found" });
+  }
+
+  if (!(await bcrypt.compare(password, user.password))) {
+    return res.status(500).json({ message: "Incorrect email or password" });
   }
 
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
